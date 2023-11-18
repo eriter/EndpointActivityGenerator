@@ -4,13 +4,15 @@ require 'yaml'
 
 class EndpointActivityGeneration
     def initialize
-      @output_dir = 'activity_generation_log'
+      @output_dir = 'generated_activity'
       FileUtils.mkdir_p(@output_dir)
       @logger = Logger.new(File.join(@output_dir, 'activity_log.yml'))
+      @script_name = $0
     end
 
     def log_activity(activity_type, details)
       log_entry = {
+        'username' => ENV['USER'],
         'timestamp' => Time.now.utc,
         'activity_type' => activity_type
       }
@@ -22,18 +24,32 @@ class EndpointActivityGeneration
 
     def start_process(executable_path, arguments = [])
       command = "#{executable_path} #{arguments.join(' ')}"
-      process_id = Process.spawn(command)
+      process = IO.popen(command)
 
 
-      username = ENV['USER']
       details = {
-        'username' => username,
         'process_name' => File.basename(executable_path),
         'process_command_line' => command,
-        'process_id' => process_id
+        'process_id' => process.pid
       }
 
       log_activity('process_start', details)
+    end
+
+    def create_file(file_path, file_type = 'txt')
+      relative_path = File.join(@output_dir, "#{file_path}.#{file_type}")
+      command = "cd . > #{relative_path}"
+      process_id = Process.spawn(command)
+      full_path = File.expand_path(relative_path)
+
+      details = {
+        'full_path_to_file' => full_path,
+        'activity_descriptor' => "create",
+        'process_name' => @script_name,
+        'process_command_line' => command,
+        'process_id' => process_id,
+      }
+      log_activity('file_create', details)
     end
 end
 
@@ -42,3 +58,4 @@ PROCESS_TO_START = "/bin/ls"
 activity_generator = EndpointActivityGeneration.new
 
 activity_generator.start_process(PROCESS_TO_START, ['-l'])
+activity_generator.create_file("abc")
