@@ -37,8 +37,8 @@ class EndpointActivityGeneration
 
     def create_file(file_path, file_type = 'txt')
       relative_path = File.join(@output_dir, "#{file_path}.#{file_type}")
-      command = "cd . > #{relative_path}"
-      process_id = Process.spawn(command)
+      command = "touch #{relative_path}"
+      process = IO.popen(command)
       full_path = File.expand_path(relative_path)
 
       details = {
@@ -46,9 +46,17 @@ class EndpointActivityGeneration
         'activity_descriptor' => "create",
         'process_name' => @script_name,
         'process_command_line' => command,
-        'process_id' => process_id,
+        'process_id' => process.pid,
       }
       log_activity('file_create', details)
+    end
+
+    def modify_file(file_path, file_type = 'txt', text_to_append = 'modified')
+      relative_path = File.join(@output_dir, "#{file_path}.#{file_type}")
+
+      return unless File.exist?(relative_path)
+
+      File.open(relative_path, 'a') { |file| file.puts(text_to_append) }
     end
 end
 
@@ -59,3 +67,4 @@ activity_generator = EndpointActivityGeneration.new
 
 activity_generator.start_process(PROCESS_TO_START, ['-l'])
 activity_generator.create_file(TEST_FILE_PATH)
+activity_generator.modify_file(TEST_FILE_PATH)
