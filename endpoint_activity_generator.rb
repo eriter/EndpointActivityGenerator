@@ -7,7 +7,7 @@ class EndpointActivityGeneration
       @output_dir = 'generated_activity'
       FileUtils.mkdir_p(@output_dir)
       @logger = Logger.new(File.join(@output_dir, 'activity_log.yml'))
-      @script_name = $0
+      @script_name = $PROGRAM_NAME
     end
 
     def log_activity(activity_type, details)
@@ -25,7 +25,6 @@ class EndpointActivityGeneration
     def start_process(executable_path, arguments = [])
       command = "#{executable_path} #{arguments.join(' ')}"
       process = IO.popen(command)
-
 
       details = {
         'process_name' => File.basename(executable_path),
@@ -54,8 +53,9 @@ class EndpointActivityGeneration
 end
 
 PROCESS_TO_START = "/bin/ls"
+TEST_FILE_PATH = "cromulent_doodle"
 
 activity_generator = EndpointActivityGeneration.new
 
 activity_generator.start_process(PROCESS_TO_START, ['-l'])
-activity_generator.create_file("abc")
+activity_generator.create_file(TEST_FILE_PATH)
