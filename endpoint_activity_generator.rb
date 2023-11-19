@@ -2,7 +2,7 @@ require 'fileutils'
 require 'logger'
 require 'yaml'
 
-class EndpointActivityGeneration
+class EndpointActivityGenerator
     def initialize
       @output_dir = 'generated_activity'
       FileUtils.mkdir_p(@output_dir)
@@ -33,6 +33,7 @@ class EndpointActivityGeneration
       }
 
       log_activity('process_start', details)
+      process.close
     end
 
     def create_file(file_path, file_type = 'txt')
@@ -48,22 +49,37 @@ class EndpointActivityGeneration
         'process_command_line' => command,
         'process_id' => process.pid,
       }
+
       log_activity('file_create', details)
+      process.close
     end
 
-    def modify_file(file_path, file_type = 'txt', text_to_append = 'modified')
+    def modify_file(file_path, file_type = 'txt', text_to_append = 'reminiscent bells')
       relative_path = File.join(@output_dir, "#{file_path}.#{file_type}")
+      full_path = File.expand_path(relative_path)
+      process_id = Process.pid
+      process_command_line = `ps -p #{process_id} -o args=`
 
       return unless File.exist?(relative_path)
 
       File.open(relative_path, 'a') { |file| file.puts(text_to_append) }
+
+      details = {
+        'full_path_to_file' => full_path,
+        'activity_descriptor' => "modify",
+        'process_name' => @script_name,
+        'process_command_line' => process_command_line.strip,
+        'process_id' => process_id,
+      }
+
+      log_activity('file_modify', details)
     end
 end
 
 PROCESS_TO_START = "/bin/ls"
 TEST_FILE_PATH = "cromulent_doodle"
 
-activity_generator = EndpointActivityGeneration.new
+activity_generator = EndpointActivityGenerator.new
 
 activity_generator.start_process(PROCESS_TO_START, ['-l'])
 activity_generator.create_file(TEST_FILE_PATH)
