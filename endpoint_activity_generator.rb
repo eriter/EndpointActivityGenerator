@@ -74,6 +74,26 @@ class EndpointActivityGenerator
 
       log_activity('file_modify', details)
     end
+
+    def delete_file(file_path, file_type = 'txt')
+      relative_path = File.join(@output_dir, "#{file_path}.#{file_type}")
+      full_path = File.expand_path(relative_path)
+      process_id = Process.pid
+      process_command_line = `ps -p #{process_id} -o args=`
+      return unless File.exist?(relative_path)
+
+      File.delete(relative_path)
+
+      details = {
+        'full_path_to_file' => full_path,
+        'activity_descriptor' => "delete",
+        'process_name' => @script_name,
+        'process_command_line' => process_command_line.strip,
+        'process_id' => process_id,
+      }
+
+      log_activity('file_delete', details)
+    end
 end
 
 PROCESS_TO_START = "/bin/ls"
@@ -84,3 +104,4 @@ activity_generator = EndpointActivityGenerator.new
 activity_generator.start_process(PROCESS_TO_START, ['-l'])
 activity_generator.create_file(TEST_FILE_PATH)
 activity_generator.modify_file(TEST_FILE_PATH)
+activity_generator.delete_file(TEST_FILE_PATH)
