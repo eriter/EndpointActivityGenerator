@@ -60,8 +60,6 @@ class EndpointActivityGenerator
       process_id = Process.pid
       process_command_line = `ps -p #{process_id} -o command=`
 
-      return unless File.exist?(relative_path)
-
       File.open(relative_path, 'a') { |file| file.puts(text_to_append) }
 
       details = {
@@ -80,7 +78,6 @@ class EndpointActivityGenerator
       full_path = File.expand_path(relative_path)
       process_id = Process.pid
       process_command_line = `ps -p #{process_id} -o command=`
-      return unless File.exist?(relative_path)
 
       File.delete(relative_path)
 
