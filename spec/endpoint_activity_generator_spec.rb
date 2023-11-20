@@ -29,11 +29,6 @@ describe EndpointActivityGenerator do
   end
 
   describe '#modify_file' do
-    before(:each) do
-      #create a file to modify
-      @activity_generator.create_file('test_file')
-    end
-
     it 'modifies a file and logs the activity' do
       file_path = 'test_file'
 
@@ -43,6 +38,15 @@ describe EndpointActivityGenerator do
       expect(File.exist?(full_path)).to be true
       log_file_path = File.join(@activity_generator.instance_variable_get(:@output_dir), 'activity_log.yml')
       expect(File.exist?(log_file_path)).to be true
+
+      # logging is not ordinarily something we'd test, but the log outputs of activity generation
+      # are a key functionality. If we chose to test them, we could do something like this:
+
+      log_entry = YAML.load_file(log_file_path, permitted_classes: [Time])
+      expect(log_entry['activity_type']).to eq('file_modify')
+      expect(log_entry['full_path_to_file']).to eq(File.expand_path(full_path))
+      expect(log_entry['activity_descriptor']).to eq('modify')
+      expect(log_entry['process_name']).to eq($PROGRAM_NAME)
     end
   end
 end
