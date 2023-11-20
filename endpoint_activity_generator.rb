@@ -1,5 +1,6 @@
 require 'fileutils'
 require 'logger'
+require 'socket'
 require 'yaml'
 
 class EndpointActivityGenerator
@@ -20,7 +21,6 @@ class EndpointActivityGenerator
       log_entry.merge!(details)
       @logger.info(log_entry.to_yaml)
     end
-
 
     def start_process(executable_path, arguments = [])
       command = "#{executable_path} #{arguments.join(' ')}"
@@ -58,7 +58,7 @@ class EndpointActivityGenerator
       relative_path = File.join(@output_dir, "#{file_path}.#{file_type}")
       full_path = File.expand_path(relative_path)
       process_id = Process.pid
-      process_command_line = `ps -p #{process_id} -o args=`
+      process_command_line = `ps -p #{process_id} -o command=`
 
       return unless File.exist?(relative_path)
 
@@ -79,7 +79,7 @@ class EndpointActivityGenerator
       relative_path = File.join(@output_dir, "#{file_path}.#{file_type}")
       full_path = File.expand_path(relative_path)
       process_id = Process.pid
-      process_command_line = `ps -p #{process_id} -o args=`
+      process_command_line = `ps -p #{process_id} -o command=`
       return unless File.exist?(relative_path)
 
       File.delete(relative_path)
