@@ -1,5 +1,4 @@
 require 'fileutils'
-require 'logger'
 require 'socket'
 require 'yaml'
 
@@ -7,7 +6,6 @@ class EndpointActivityGenerator
     def initialize
       @output_dir = 'generated_activity'
       FileUtils.mkdir_p(@output_dir)
-      @logger = Logger.new(File.join(@output_dir, 'activity_log.yml'))
       @script_name = $PROGRAM_NAME
     end
 
@@ -18,8 +16,9 @@ class EndpointActivityGenerator
         'activity_type' => activity_type
       }
 
+      log_file = File.join(@output_dir, 'activity_log.yml')
       log_entry.merge!(details)
-      @logger.info(log_entry.to_yaml)
+      File.open(log_file, 'a') { |f| f.puts(log_entry.to_yaml) }
     end
 
     def start_process(executable_path, arguments = [])
