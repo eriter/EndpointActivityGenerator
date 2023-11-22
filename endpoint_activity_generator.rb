@@ -1,25 +1,10 @@
-require 'fileutils'
-require 'socket'
 require 'yaml'
 require_relative 'activity_logger.rb'
 
 class EndpointActivityGenerator
     def initialize
       @output_dir = 'generated_activity'
-      FileUtils.mkdir_p(@output_dir)
       @script_name = $PROGRAM_NAME
-    end
-
-    def log_activity(activity_type, details)
-      log_entry = {
-        'username' => ENV['USER'],
-        'timestamp' => Time.now.utc,
-        'activity_type' => activity_type
-      }
-
-      log_file = File.join(@output_dir, 'activity_log.yml')
-      log_entry.merge!(details)
-      File.open(log_file, 'a') { |f| f.puts(log_entry.to_yaml) }
     end
 
     def start_process(executable_path, arguments = [], logger)
@@ -37,7 +22,7 @@ class EndpointActivityGenerator
       process.close
     end
 
-    def create_file(file_path, file_type = 'txt')
+    def create_file(file_path, file_type = 'txt', logger)
       relative_path = File.join(@output_dir, "#{file_path}.#{file_type}")
       command = "touch #{relative_path}"
       process = IO.popen(command)
@@ -51,11 +36,11 @@ class EndpointActivityGenerator
         'process_id' => process.pid,
       }
 
-      log_activity('file_create', details)
+      logger.log_activity('file_create', details)
       process.close
     end
 
-    def modify_file(file_path, file_type = 'txt', text_to_append = 'reminiscent bells')
+    def modify_file(file_path, file_type = 'txt', text_to_append = 'reminiscent bells', logger)
       relative_path = File.join(@output_dir, "#{file_path}.#{file_type}")
       full_path = File.expand_path(relative_path)
       process_id = Process.pid
@@ -71,10 +56,10 @@ class EndpointActivityGenerator
         'process_id' => process_id,
       }
 
-      log_activity('file_modify', details)
+      logger.log_activity('file_modify', details)
     end
 
-    def delete_file(file_path, file_type = 'txt')
+    def delete_file(file_path, file_type = 'txt', logger)
       relative_path = File.join(@output_dir, "#{file_path}.#{file_type}")
       full_path = File.expand_path(relative_path)
       process_id = Process.pid
@@ -90,7 +75,7 @@ class EndpointActivityGenerator
         'process_id' => process_id,
       }
 
-      log_activity('file_delete', details)
+      logger.log_activity('file_delete', details)
     end
 end
 
@@ -103,6 +88,6 @@ activity_generator = EndpointActivityGenerator.new
 activity_logger = ActivityLogger.new(OUTPUT_DIR)
 
 activity_generator.start_process(PROCESS_TO_START, PROCESS_ARGS, activity_logger)
-activity_generator.create_file(TEST_FILE_PATH)
-activity_generator.modify_file(TEST_FILE_PATH)
-activity_generator.delete_file(TEST_FILE_PATH)
+activity_generator.create_file(TEST_FILE_PATH, activity_logger)
+activity_generator.modify_file(TEST_FILE_PATH, activity_logger)
+activity_generator.delete_file(TEST_FILE_PATH, activity_logger)
