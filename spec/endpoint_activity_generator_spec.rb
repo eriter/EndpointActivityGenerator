@@ -1,19 +1,25 @@
 require_relative '../endpoint_activity_generator.rb'
+require_relative '../activity_logger.rb'
 require 'rspec'
+require 'tmpdir'
 
 describe EndpointActivityGenerator do
+  let(:temp_dir) { Dir.mktmpdir }
+
   before(:each) do
     @activity_generator = EndpointActivityGenerator.new
+    @logger = ActivityLogger.new(temp_dir)
+    @activity_generator.instance_variable_set(:@output_dir, temp_dir)
   end
 
   after(:each) do
-    FileUtils.rm_rf(@activity_generator.instance_variable_get(:@output_dir))
+    FileUtils.rm_rf(temp_dir)
   end
 
   describe '#start_process' do
     it 'creates a log file' do
-      @activity_generator.start_process('/bin/ls', ['-l'])
-      log_file_path = File.join(@activity_generator.instance_variable_get(:@output_dir), 'activity_log.yml')
+      @activity_generator.start_process('/bin/ls', ['-l'], @logger)
+      log_file_path = File.join(temp_dir, 'activity_log.yml')
       expect(File.exist?(log_file_path)).to be true
     end
   end
@@ -21,9 +27,9 @@ describe EndpointActivityGenerator do
   describe '#create_file' do
     it 'creates a file and logs the activity' do
       @activity_generator.create_file('test_file')
-      file_path = File.join(@activity_generator.instance_variable_get(:@output_dir), 'test_file.txt')
+      file_path = File.join(temp_dir, 'test_file.txt')
       expect(File.exist?(file_path)).to be true
-      log_file_path = File.join(@activity_generator.instance_variable_get(:@output_dir), 'activity_log.yml')
+      log_file_path = File.join(temp_dir, 'activity_log.yml')
       expect(File.exist?(log_file_path)).to be true
     end
   end
@@ -34,9 +40,9 @@ describe EndpointActivityGenerator do
 
       @activity_generator.modify_file(file_path, 'txt', 'additional content')
 
-      full_path = File.join(@activity_generator.instance_variable_get(:@output_dir), "#{file_path}.txt")
+      full_path = File.join(temp_dir, "#{file_path}.txt")
       expect(File.exist?(full_path)).to be true
-      log_file_path = File.join(@activity_generator.instance_variable_get(:@output_dir), 'activity_log.yml')
+      log_file_path = File.join(temp_dir, 'activity_log.yml')
       expect(File.exist?(log_file_path)).to be true
 
       # logging is not ordinarily something we'd test, but the log outputs of activity generation
