@@ -2,7 +2,7 @@ require 'fileutils'
 require 'yaml'
 
 class ActivityLogger
-  def initialize(output_directory)
+  def initialize(output_directory = 'generated_activity')
     @output_dir = output_directory
     FileUtils.mkdir_p(@output_dir)
   end
