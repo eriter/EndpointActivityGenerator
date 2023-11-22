@@ -26,7 +26,7 @@ describe EndpointActivityGenerator do
 
   describe '#create_file' do
     it 'creates a file and logs the activity' do
-      @activity_generator.create_file('test_file')
+      @activity_generator.create_file('test_file', @logger)
       file_path = File.join(temp_dir, 'test_file.txt')
       expect(File.exist?(file_path)).to be true
       log_file_path = File.join(temp_dir, 'activity_log.yml')
@@ -38,7 +38,7 @@ describe EndpointActivityGenerator do
     it 'modifies a file and logs the activity' do
       file_path = 'test_file'
 
-      @activity_generator.modify_file(file_path, 'txt', 'additional content')
+      @activity_generator.modify_file(file_path, 'txt', 'additional content', @logger)
 
       full_path = File.join(temp_dir, "#{file_path}.txt")
       expect(File.exist?(full_path)).to be true
