@@ -1,6 +1,7 @@
 require 'fileutils'
 require 'socket'
 require 'yaml'
+require_relative 'activity_logger.rb'
 
 class EndpointActivityGenerator
     def initialize
@@ -21,7 +22,7 @@ class EndpointActivityGenerator
       File.open(log_file, 'a') { |f| f.puts(log_entry.to_yaml) }
     end
 
-    def start_process(executable_path, arguments = [])
+    def start_process(executable_path, arguments = [], logger)
       command = "#{executable_path} #{arguments.join(' ')}"
       process = IO.popen(command)
 
@@ -31,7 +32,8 @@ class EndpointActivityGenerator
         'process_id' => process.pid
       }
 
-      log_activity('process_start', details)
+      logger.log_activity('process_start', details)
+
       process.close
     end
 
@@ -93,11 +95,14 @@ class EndpointActivityGenerator
 end
 
 PROCESS_TO_START = "/bin/ls"
+PROCESS_ARGS = ['-l']
 TEST_FILE_PATH = "cromulent_doodle"
+OUTPUT_DIR = 'generated_activity'
 
 activity_generator = EndpointActivityGenerator.new
+activity_logger = ActivityLogger.new(OUTPUT_DIR)
 
-activity_generator.start_process(PROCESS_TO_START, ['-l'])
+activity_generator.start_process(PROCESS_TO_START, PROCESS_ARGS, activity_logger)
 activity_generator.create_file(TEST_FILE_PATH)
 activity_generator.modify_file(TEST_FILE_PATH)
 activity_generator.delete_file(TEST_FILE_PATH)
