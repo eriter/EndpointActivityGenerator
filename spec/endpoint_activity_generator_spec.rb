@@ -1,4 +1,5 @@
 require_relative '../endpoint_activity_generator.rb'
+require_relative '../process_activity_generator.rb'
 require_relative '../activity_logger.rb'
 require 'rspec'
 require 'tmpdir'
@@ -17,8 +18,13 @@ describe EndpointActivityGenerator do
   end
 
   describe '#start_process' do
+    before(:each) do
+      @process_activity = ProcessActivityGenerator.new
+      @process_activity.instance_variable_set(:@output_dir, temp_dir)
+    end
+
     it 'creates a log file' do
-      @activity_generator.start_process('/bin/ls', ['-l'], @logger)
+      @process_activity.start_process('/bin/ls', ['-l'], @logger)
       log_file_path = File.join(temp_dir, 'activity_log.json')
       expect(File.exist?(log_file_path)).to be true
     end
@@ -46,7 +52,7 @@ describe EndpointActivityGenerator do
       expect(File.exist?(log_file_path)).to be true
 
       # logging is not ordinarily something we'd test, but the log outputs of activity generation
-      # are a key functionality. If we chose to test them, we could do something like this:
+      # are a key functionality. If we chose to test log contents, we could do something like this:
 
       log_entry = JSON.load_file(log_file_path, permitted_classes: [Time])
       expect(log_entry['activity_type']).to eq('file_modify')

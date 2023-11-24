@@ -1,25 +1,11 @@
 require_relative 'activity_logger.rb'
 require_relative 'network_activity_generator.rb'
+require_relative 'process_activity_generator.rb'
 
 class EndpointActivityGenerator
     def initialize
       @output_dir = 'generated_activity'
       @script_name = $PROGRAM_NAME
-    end
-
-    def start_process(executable_path, arguments = [], logger)
-      command = "#{executable_path} #{arguments.join(' ')}"
-      process = IO.popen(command)
-
-      details = {
-        'process_name' => File.basename(executable_path),
-        'process_command_line' => command,
-        'process_id' => process.pid
-      }
-
-      logger.log_activity('process_start', details)
-
-      process.close
     end
 
     def create_file(file_path, file_type = 'txt', logger)
@@ -90,8 +76,9 @@ NETWORK_DATA = 'Test message'
 activity_generator = EndpointActivityGenerator.new
 activity_logger = ActivityLogger.new(OUTPUT_DIR)
 network_activity = NetworkActivityGenerator.new
+process_activity = ProcessActivityGenerator.new
 
-activity_generator.start_process(PROCESS_TO_START, PROCESS_ARGS, activity_logger)
+process_activity.start_process(PROCESS_TO_START, PROCESS_ARGS, activity_logger)
 activity_generator.create_file(TEST_FILE_PATH, activity_logger)
 activity_generator.modify_file(TEST_FILE_PATH, activity_logger)
 activity_generator.delete_file(TEST_FILE_PATH, activity_logger)
