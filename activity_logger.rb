@@ -1,5 +1,5 @@
 require 'fileutils'
-require 'yaml'
+require 'json'
 
 class ActivityLogger
   def initialize(output_directory = 'generated_activity')
@@ -14,8 +14,8 @@ class ActivityLogger
       'activity_type' => activity_type
     }
 
-    log_file = File.join(@output_dir, 'activity_log.yml')
+    log_file = File.join(@output_dir, 'activity_log.json')
     log_entry.merge!(details)
-    File.open(log_file, 'a') { |f| f.puts(log_entry.to_yaml) }
+    File.open(log_file, 'a') { |f| f.puts(log_entry.to_json) }
   end
 end

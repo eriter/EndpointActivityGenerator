@@ -1,4 +1,3 @@
-require 'yaml'
 require_relative 'activity_logger.rb'
 require_relative 'network_activity_generator.rb'
 

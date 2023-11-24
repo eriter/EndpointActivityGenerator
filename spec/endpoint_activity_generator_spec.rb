@@ -19,7 +19,7 @@ describe EndpointActivityGenerator do
   describe '#start_process' do
     it 'creates a log file' do
       @activity_generator.start_process('/bin/ls', ['-l'], @logger)
-      log_file_path = File.join(temp_dir, 'activity_log.yml')
+      log_file_path = File.join(temp_dir, 'activity_log.json')
       expect(File.exist?(log_file_path)).to be true
     end
   end
@@ -29,7 +29,7 @@ describe EndpointActivityGenerator do
       @activity_generator.create_file('test_file', @logger)
       file_path = File.join(temp_dir, 'test_file.txt')
       expect(File.exist?(file_path)).to be true
-      log_file_path = File.join(temp_dir, 'activity_log.yml')
+      log_file_path = File.join(temp_dir, 'activity_log.json')
       expect(File.exist?(log_file_path)).to be true
     end
   end
@@ -42,13 +42,13 @@ describe EndpointActivityGenerator do
 
       full_path = File.join(temp_dir, "#{file_path}.txt")
       expect(File.exist?(full_path)).to be true
-      log_file_path = File.join(temp_dir, 'activity_log.yml')
+      log_file_path = File.join(temp_dir, 'activity_log.json')
       expect(File.exist?(log_file_path)).to be true
 
       # logging is not ordinarily something we'd test, but the log outputs of activity generation
       # are a key functionality. If we chose to test them, we could do something like this:
 
-      log_entry = YAML.load_file(log_file_path, permitted_classes: [Time])
+      log_entry = JSON.load_file(log_file_path, permitted_classes: [Time])
       expect(log_entry['activity_type']).to eq('file_modify')
       expect(log_entry['full_path_to_file']).to eq(File.expand_path(full_path))
       expect(log_entry['activity_descriptor']).to eq('modify')
