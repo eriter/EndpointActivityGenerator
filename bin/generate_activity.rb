@@ -5,11 +5,14 @@ require_relative '../lib/file_activity_generator.rb'
 require_relative '../lib/network_activity_generator.rb'
 require_relative '../lib/process_activity_generator.rb'
 
+OUTPUT_DIRECTORY = 'generated_activity'
+#process activity constants
 PROCESS_TO_START = '/bin/ls'
 PROCESS_ARGS = ['-l']
+#file activity constants
 TEST_FILE_PATH = 'cromulent_doodle'
 TEST_FILE_TYPE = 'txt'
-OUTPUT_DIRECTORY = 'generated_activity'
+#network activity constants
 DESTINATION_ADDRESS = '8.8.8.8'
 DESTINATION_PORT = '53'
 NETWORK_DATA = 'Test message'
