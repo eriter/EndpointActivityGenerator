@@ -1,7 +1,8 @@
 class EndpointActivityGenerator
-    def initialize
-      @output_dir = 'generated_activity'
-      @script_name = $PROGRAM_NAME
+
+    def initialize (output_directory, script_name)
+      @output_dir = output_directory
+      @script_name = script_name
     end
 
     def create_file(file_path, file_type = 'txt', logger)

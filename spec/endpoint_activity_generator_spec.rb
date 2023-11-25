@@ -8,7 +8,7 @@ describe EndpointActivityGenerator do
   let(:temp_dir) { Dir.mktmpdir }
 
   before(:each) do
-    @activity_generator = EndpointActivityGenerator.new
+    @activity_generator = EndpointActivityGenerator.new(temp_dir, $PROGRAM_NAME)
     @logger = ActivityLogger.new(temp_dir)
     @activity_generator.instance_variable_set(:@output_dir, temp_dir)
   end
