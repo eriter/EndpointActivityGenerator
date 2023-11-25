@@ -7,9 +7,10 @@ describe FileActivityGenerator do
   let(:temp_dir) { Dir.mktmpdir }
 
   before(:each) do
-    @file_activity_generator = FileActivityGenerator.new(temp_dir, $PROGRAM_NAME, 'txt')
-    @logger = ActivityLogger.new(temp_dir)
-    @file_activity_generator.instance_variable_set(:@output_dir, temp_dir)
+    @output_directory = temp_dir
+    @file_path = 'test_file'
+    @file_activity_generator = FileActivityGenerator.new(@output_directory, $PROGRAM_NAME, @file_path, 'txt')
+    @logger = ActivityLogger.new(@output_directory)
   end
 
   after(:each) do
@@ -18,7 +19,7 @@ describe FileActivityGenerator do
 
   describe '#create_file' do
     it 'creates a file and logs the activity' do
-      @file_activity_generator.create_file('test_file', @logger)
+      @file_activity_generator.create_file(@logger)
       file_path = File.join(temp_dir, 'test_file.txt')
       expect(File.exist?(file_path)).to be true
       log_file_path = File.join(temp_dir, 'activity_log.json')
@@ -28,14 +29,18 @@ describe FileActivityGenerator do
 
   describe '#modify_file' do
     it 'modifies a file and logs the activity' do
-      file_path = 'test_file'
+      additional_content = 'additional content'
 
-      @file_activity_generator.modify_file(file_path, 'additional content', @logger)
+      @file_activity_generator.modify_file(additional_content, @logger)
 
-      full_path = File.join(temp_dir, "#{file_path}.txt")
+      full_path = File.join(temp_dir, "#{@file_path}.txt")
       expect(File.exist?(full_path)).to be true
+
       log_file_path = File.join(temp_dir, 'activity_log.json')
       expect(File.exist?(log_file_path)).to be true
+
+      modified_file_content = File.read(full_path)
+      expect(modified_file_content).to include(additional_content)
 
       # logging is not ordinarily something we'd test, but the log outputs of activity generation
       # are a key functionality. If we chose to test log contents, we could do something like this:
