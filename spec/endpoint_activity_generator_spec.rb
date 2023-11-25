@@ -1,6 +1,6 @@
-require_relative '../endpoint_activity_generator.rb'
-require_relative '../process_activity_generator.rb'
-require_relative '../activity_logger.rb'
+require_relative '../lib/endpoint_activity_generator.rb'
+require_relative '../lib/process_activity_generator.rb'
+require_relative '../lib/activity_logger.rb'
 require 'rspec'
 require 'tmpdir'
 
