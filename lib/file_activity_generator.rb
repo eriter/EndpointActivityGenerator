@@ -1,3 +1,5 @@
+require 'fileutils'
+
 class FileActivityGenerator
 
     def initialize (output_directory, script_name, file_path, file_type)
@@ -9,19 +11,20 @@ class FileActivityGenerator
     end
 
     def create_file(logger)
-      command = "touch #{@relative_path}"
-      process = IO.popen(command)
+      process_id = Process.pid
+      process_command_line = `ps -p #{process_id} -o command=`
+
+      FileUtils.touch(@relative_path)
 
       details = {
         'full_path_to_file' => @full_path,
         'activity_descriptor' => "create",
         'process_name' => @script_name,
-        'process_command_line' => command,
-        'process_id' => process.pid,
+        'process_command_line' => process_command_line.strip,
+        'process_id' => process_id,
       }
 
       logger.log_activity('file_create', details)
-      process.close
     end
 
     def modify_file(text_to_append = 'reminiscent bells', logger)
