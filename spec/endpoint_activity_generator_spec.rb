@@ -8,7 +8,7 @@ describe EndpointActivityGenerator do
   let(:temp_dir) { Dir.mktmpdir }
 
   before(:each) do
-    @activity_generator = EndpointActivityGenerator.new(temp_dir, $PROGRAM_NAME)
+    @activity_generator = EndpointActivityGenerator.new(temp_dir, $PROGRAM_NAME, 'txt')
     @logger = ActivityLogger.new(temp_dir)
     @activity_generator.instance_variable_set(:@output_dir, temp_dir)
   end
@@ -44,7 +44,7 @@ describe EndpointActivityGenerator do
     it 'modifies a file and logs the activity' do
       file_path = 'test_file'
 
-      @activity_generator.modify_file(file_path, 'txt', 'additional content', @logger)
+      @activity_generator.modify_file(file_path, 'additional content', @logger)
 
       full_path = File.join(temp_dir, "#{file_path}.txt")
       expect(File.exist?(full_path)).to be true

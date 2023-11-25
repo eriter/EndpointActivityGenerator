@@ -1,12 +1,13 @@
 class EndpointActivityGenerator
 
-    def initialize (output_directory, script_name)
+    def initialize (output_directory, script_name, file_type)
       @output_dir = output_directory
       @script_name = script_name
+      @file_type = file_type
     end
 
-    def create_file(file_path, file_type = 'txt', logger)
-      relative_path = File.join(@output_dir, "#{file_path}.#{file_type}")
+    def create_file(file_path, logger)
+      relative_path = File.join(@output_dir, "#{file_path}.#{@file_type}")
       command = "touch #{relative_path}"
       process = IO.popen(command)
       full_path = File.expand_path(relative_path)
@@ -23,8 +24,8 @@ class EndpointActivityGenerator
       process.close
     end
 
-    def modify_file(file_path, file_type = 'txt', text_to_append = 'reminiscent bells', logger)
-      relative_path = File.join(@output_dir, "#{file_path}.#{file_type}")
+    def modify_file(file_path, text_to_append = 'reminiscent bells', logger)
+      relative_path = File.join(@output_dir, "#{file_path}.#{@file_type}")
       full_path = File.expand_path(relative_path)
       process_id = Process.pid
       process_command_line = `ps -p #{process_id} -o command=`
@@ -42,8 +43,8 @@ class EndpointActivityGenerator
       logger.log_activity('file_modify', details)
     end
 
-    def delete_file(file_path, file_type = 'txt', logger)
-      relative_path = File.join(@output_dir, "#{file_path}.#{file_type}")
+    def delete_file(file_path, logger)
+      relative_path = File.join(@output_dir, "#{file_path}.#{@file_type}")
       full_path = File.expand_path(relative_path)
       process_id = Process.pid
       process_command_line = `ps -p #{process_id} -o command=`

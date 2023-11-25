@@ -6,12 +6,13 @@ require_relative '../lib/process_activity_generator.rb'
 PROCESS_TO_START = '/bin/ls'
 PROCESS_ARGS = ['-l']
 TEST_FILE_PATH = 'cromulent_doodle'
+TEST_FILE_TYPE = 'txt'
 OUTPUT_DIRECTORY = 'generated_activity'
 DESTINATION_ADDRESS = '8.8.8.8'
 DESTINATION_PORT = '53'
 NETWORK_DATA = 'Test message'
 
-activity_generator = EndpointActivityGenerator.new(OUTPUT_DIRECTORY, $PROGRAM_NAME)
+activity_generator = EndpointActivityGenerator.new(OUTPUT_DIRECTORY, $PROGRAM_NAME, TEST_FILE_TYPE)
 activity_logger = ActivityLogger.new(OUTPUT_DIRECTORY)
 network_activity = NetworkActivityGenerator.new
 process_activity = ProcessActivityGenerator.new
