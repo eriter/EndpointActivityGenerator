@@ -1,4 +1,4 @@
-class EndpointActivityGenerator
+class FileActivityGenerator
 
     def initialize (output_directory, script_name, file_type)
       @output_dir = output_directory

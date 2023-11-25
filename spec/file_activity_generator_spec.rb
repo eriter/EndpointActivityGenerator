@@ -1,16 +1,16 @@
-require_relative '../lib/endpoint_activity_generator.rb'
+require_relative '../lib/file_activity_generator.rb'
 require_relative '../lib/process_activity_generator.rb'
 require_relative '../lib/activity_logger.rb'
 require 'rspec'
 require 'tmpdir'
 
-describe EndpointActivityGenerator do
+describe FileActivityGenerator do
   let(:temp_dir) { Dir.mktmpdir }
 
   before(:each) do
-    @activity_generator = EndpointActivityGenerator.new(temp_dir, $PROGRAM_NAME, 'txt')
+    @file_activity_generator = FileActivityGenerator.new(temp_dir, $PROGRAM_NAME, 'txt')
     @logger = ActivityLogger.new(temp_dir)
-    @activity_generator.instance_variable_set(:@output_dir, temp_dir)
+    @file_activity_generator.instance_variable_set(:@output_dir, temp_dir)
   end
 
   after(:each) do
@@ -32,7 +32,7 @@ describe EndpointActivityGenerator do
 
   describe '#create_file' do
     it 'creates a file and logs the activity' do
-      @activity_generator.create_file('test_file', @logger)
+      @file_activity_generator.create_file('test_file', @logger)
       file_path = File.join(temp_dir, 'test_file.txt')
       expect(File.exist?(file_path)).to be true
       log_file_path = File.join(temp_dir, 'activity_log.json')
@@ -44,7 +44,7 @@ describe EndpointActivityGenerator do
     it 'modifies a file and logs the activity' do
       file_path = 'test_file'
 
-      @activity_generator.modify_file(file_path, 'additional content', @logger)
+      @file_activity_generator.modify_file(file_path, 'additional content', @logger)
 
       full_path = File.join(temp_dir, "#{file_path}.txt")
       expect(File.exist?(full_path)).to be true
