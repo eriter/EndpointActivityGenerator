@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require_relative '../lib/activity_logger.rb'
 require_relative '../lib/file_activity_generator.rb'
 require_relative '../lib/network_activity_generator.rb'
