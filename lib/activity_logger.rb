@@ -8,14 +8,14 @@ class ActivityLogger
     FileUtils.mkdir_p(@output_dir)
   end
 
-  def log_activity(activity_type, details)
+  def log_activity(activity_type, activity_details)
     log_entry = {
       'username' => ENV['USER'],
       'timestamp' => Time.now.utc,
       'activity_type' => activity_type
     }
 
-    log_entry.merge!(details)
+    log_entry.merge!(activity_details)
     File.open(@log_file, 'a') { |f| f.puts(log_entry.to_json) }
   end
 
@@ -26,7 +26,6 @@ class ActivityLogger
       'error_message' => error_message
     }
 
-    log_entry.merge!(details)
     File.open(@log_file, 'a') { |f| f.puts(error_entry.to_json) }
   end
 

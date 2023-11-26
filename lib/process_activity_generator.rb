@@ -4,15 +4,14 @@ class ProcessActivityGenerator
     command = "#{executable_path} #{arguments.join(' ')}"
     process = IO.popen(command)
 
-    details = {
+    activity_details = {
       'process_name' => File.basename(executable_path),
       'process_command_line' => command,
       'process_id' => process.pid
     }
 
-    logger.log_activity('process_start', details)
+    logger.log_activity('process_start', activity_details)
 
     process.close
   end
-
 end

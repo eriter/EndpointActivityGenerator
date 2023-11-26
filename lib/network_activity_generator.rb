@@ -27,7 +27,7 @@ class NetworkActivityGenerator
     process_id = Process.pid
     process_command_line = `ps -p #{process_id} -o command=`
 
-    details = {
+    activity_details = {
       'destination_address' => destination_address,
       'destination_port' => destination_port,
       'source_address' => source_address,
@@ -39,7 +39,7 @@ class NetworkActivityGenerator
       'process_id' => process_id
     }
 
-    logger.log_activity('transmit_data', details)
+    logger.log_activity('transmit_data', activity_details)
   end
 
   def close_connection
