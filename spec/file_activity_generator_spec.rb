@@ -12,6 +12,7 @@ describe FileActivityGenerator do
     @file_type = 'txt'
     @file_activity_generator = FileActivityGenerator.new(@output_directory, $PROGRAM_NAME)
     @logger = ActivityLogger.new(@output_directory)
+    @logger.instance_variable_set(:@log_file, "#{temp_dir}/activity_log.json")
   end
 
   after(:each) do

@@ -8,6 +8,7 @@ describe ProcessActivityGenerator do
 
   before(:each) do
     @logger = ActivityLogger.new(temp_dir)
+    @logger.instance_variable_set(:@log_file, "#{temp_dir}/activity_log.json")
   end
 
   after(:each) do
