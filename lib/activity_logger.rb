@@ -50,5 +50,6 @@ class ActivityLogger
   #shelling out to ps is platform dependent, alas
   def default_process_command_line
     process_command_line = `ps -p #{default_process_id} -o command=`
+    process_command_line.strip
   end
 end
