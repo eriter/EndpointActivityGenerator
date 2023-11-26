@@ -8,7 +8,7 @@ describe ProcessActivityGenerator do
 
   before(:each) do
     @logger = ActivityLogger.new(temp_dir)
-    @logger.instance_variable_set(:@log_file, "#{temp_dir}/activity_log.json")
+    @logger.instance_variable_set(:@log_file, "#{temp_dir}/activity_log.yml")
   end
 
   after(:each) do
@@ -23,7 +23,7 @@ describe ProcessActivityGenerator do
 
     it 'creates a log file' do
       @process_activity.start_process('/bin/ls', ['-l'], @logger)
-      log_file_path = File.join(temp_dir, 'activity_log.json')
+      log_file_path = File.join(temp_dir, 'activity_log.yml')
       expect(File.exist?(log_file_path)).to be true
     end
   end

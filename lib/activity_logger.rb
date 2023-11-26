@@ -1,5 +1,5 @@
 require 'fileutils'
-require 'json'
+require 'yaml'
 
 class ActivityLogger
   def initialize(output_directory = 'generated_activity')
@@ -19,7 +19,7 @@ class ActivityLogger
     }
 
     log_entry.merge!(activity_details)
-    File.open(@log_file, 'a') { |f| f.puts(log_entry.to_json) }
+    File.open(@log_file, 'a') { |f| f.puts(log_entry.to_yaml) }
   end
 
   def log_error(error_message)
@@ -29,14 +29,14 @@ class ActivityLogger
       'error_message' => error_message
     }
 
-    File.open(@log_file, 'a') { |f| f.puts(error_entry.to_json) }
+    File.open(@log_file, 'a') { |f| f.puts(error_entry.to_yaml) }
   end
 
   private
 
   def build_log_file
     log_timestamp = Time.now.utc.strftime('%Y%m%d_%H%M%S')
-    File.join(@output_dir, "activity_log_#{log_timestamp}.json")
+    File.join(@output_dir, "activity_log_#{log_timestamp}.yml")
   end
 
   def default_process_id
