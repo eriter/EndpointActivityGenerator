@@ -53,7 +53,7 @@ class FileActivityGenerator
 
       activity_details = {
         'full_path_to_file' => full_path,
-        'file_activity_descriptor' => activity_descriptor,
+        'activity_descriptor' => activity_descriptor,
       }
 
       logger.log_activity("file_#{activity_descriptor}", activity_details)
