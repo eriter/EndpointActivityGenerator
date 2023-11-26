@@ -39,9 +39,6 @@ class FileActivityGenerator
     end
 
     def perform_file_operation(activity_descriptor, full_path, logger)
-      process_id = Process.pid
-      process_command_line = `ps -p #{process_id} -o command=`
-
       begin
         yield if block_given?
       rescue Errno::EACCES, Errno::EPERM => e
@@ -56,10 +53,7 @@ class FileActivityGenerator
 
       activity_details = {
         'full_path_to_file' => full_path,
-        'activity_descriptor' => activity_descriptor,
-        'process_name' => @script_name,
-        'process_command_line' => process_command_line.strip,
-        'process_id' => process_id,
+        'file_activity_descriptor' => activity_descriptor,
       }
 
       logger.log_activity("file_#{activity_descriptor}", activity_details)
