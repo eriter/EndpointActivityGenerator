@@ -1,21 +1,24 @@
 #!/usr/bin/env ruby
 
+require 'yaml'
 require_relative '../lib/activity_logger.rb'
 require_relative '../lib/file_activity_generator.rb'
 require_relative '../lib/network_activity_generator.rb'
 require_relative '../lib/process_activity_generator.rb'
 
-OUTPUT_DIRECTORY = 'generated_activity'
+config = YAML.load_file(File.join(File.dirname(__FILE__), '../config.yml'))
+
+OUTPUT_DIRECTORY = config['output_directory']
 #process activity constants
-PROCESS_TO_START = '/bin/ls'
-PROCESS_ARGS = ['-l']
+PROCESS_TO_START = config['process_to_start']
+PROCESS_ARGS = config['process_args']
 #file activity constants
-TEST_FILE_PATH = 'cromulent_doodle'
-TEST_FILE_TYPE = 'txt'
+TEST_FILE_PATH = config['test_file_path']
+TEST_FILE_TYPE = config['test_file_type']
 #network activity constants
-DESTINATION_ADDRESS = '8.8.8.8'
-DESTINATION_PORT = '53'
-NETWORK_DATA = 'Test message'
+DESTINATION_ADDRESS = config['destination_address']
+DESTINATION_PORT = config['destination_port']
+NETWORK_DATA = config['network_data']
 
 file_activity_generator = FileActivityGenerator.new(OUTPUT_DIRECTORY, $PROGRAM_NAME)
 activity_logger = ActivityLogger.new(OUTPUT_DIRECTORY)
