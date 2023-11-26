@@ -42,7 +42,17 @@ class FileActivityGenerator
       process_id = Process.pid
       process_command_line = `ps -p #{process_id} -o command=`
 
-      yield if block_given?
+      begin
+        yield if block_given?
+      rescue Errno::EACCES, Errno::EPERM => e
+        error_message = "Permission error during file #{activity_descriptor} operation: #{e.message}"
+        logger.log_error(error_message)
+        return
+      rescue StandardError => e
+        error_message = "Error during file operation: #{e.message}"
+        logger.log_error(error_message)
+        return
+      end
 
       activity_details = {
         'full_path_to_file' => full_path,

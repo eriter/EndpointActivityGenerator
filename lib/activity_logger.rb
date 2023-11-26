@@ -18,4 +18,16 @@ class ActivityLogger
     log_entry.merge!(details)
     File.open(log_file, 'a') { |f| f.puts(log_entry.to_json) }
   end
+
+  def log_error(error_message)
+    error_entry = {
+      'username' => ENV['USER'],
+      'timestamp' => Time.now.utc,
+      'error_message' => error_message
+    }
+
+    log_file = File.join(@output_dir, 'activity_log.json')
+    log_entry.merge!(details)
+    File.open(log_file, 'a') { |f| f.puts(error_entry.to_json) }
+  end
 end
