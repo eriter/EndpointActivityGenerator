@@ -4,6 +4,7 @@ require 'json'
 class ActivityLogger
   def initialize(output_directory = 'generated_activity')
     @output_dir = output_directory
+    @log_file = build_log_file
     FileUtils.mkdir_p(@output_dir)
   end
 
@@ -14,9 +15,8 @@ class ActivityLogger
       'activity_type' => activity_type
     }
 
-    log_file = File.join(@output_dir, 'activity_log.json')
     log_entry.merge!(details)
-    File.open(log_file, 'a') { |f| f.puts(log_entry.to_json) }
+    File.open(@log_file, 'a') { |f| f.puts(log_entry.to_json) }
   end
 
   def log_error(error_message)
@@ -26,8 +26,14 @@ class ActivityLogger
       'error_message' => error_message
     }
 
-    log_file = File.join(@output_dir, 'activity_log.json')
     log_entry.merge!(details)
-    File.open(log_file, 'a') { |f| f.puts(error_entry.to_json) }
+    File.open(@log_file, 'a') { |f| f.puts(error_entry.to_json) }
+  end
+
+  private
+
+  def build_log_file
+    timestamp = Time.now.utc.strftime('%Y%m%d_%H%M%S')
+    File.join(@output_dir, "activity_log_#{timestamp}.json")
   end
 end
