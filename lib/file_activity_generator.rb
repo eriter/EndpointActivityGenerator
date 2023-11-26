@@ -9,56 +9,26 @@ class FileActivityGenerator
 
     def create_file(file_path, file_type, logger)
       full_path = build_full_filepath(file_path, file_type)
-      process_id = Process.pid
-      process_command_line = `ps -p #{process_id} -o command=`
 
-      FileUtils.touch(full_path)
-
-      details = {
-        'full_path_to_file' => full_path,
-        'activity_descriptor' => "create",
-        'process_name' => @script_name,
-        'process_command_line' => process_command_line.strip,
-        'process_id' => process_id,
-      }
-
-      logger.log_activity('file_create', details)
+      perform_file_operation('create', full_path, logger) do
+        FileUtils.touch(full_path)
+      end
     end
 
     def modify_file(file_path, file_type, text_to_append = 'reminiscent bells', logger)
       full_path = build_full_filepath(file_path, file_type)
-      process_id = Process.pid
-      process_command_line = `ps -p #{process_id} -o command=`
 
-      File.open(full_path, 'a') { |file| file.puts(text_to_append) }
-
-      details = {
-        'full_path_to_file' => full_path,
-        'activity_descriptor' => "modify",
-        'process_name' => @script_name,
-        'process_command_line' => process_command_line.strip,
-        'process_id' => process_id,
-      }
-
-      logger.log_activity('file_modify', details)
+      perform_file_operation('modify', full_path, logger) do
+        File.open(full_path, 'a') { |file| file.puts(text_to_append) }
+      end
     end
 
     def delete_file(file_path, file_type, logger)
       full_path = build_full_filepath(file_path, file_type)
-      process_id = Process.pid
-      process_command_line = `ps -p #{process_id} -o command=`
 
-      File.delete(full_path)
-
-      details = {
-        'full_path_to_file' => full_path,
-        'activity_descriptor' => "delete",
-        'process_name' => full_path,
-        'process_command_line' => process_command_line.strip,
-        'process_id' => process_id,
-      }
-
-      logger.log_activity('file_delete', details)
+      perform_file_operation('delete', full_path, logger) do
+        File.delete(full_path)
+      end
     end
 
     private
@@ -66,5 +36,22 @@ class FileActivityGenerator
     def build_full_filepath(file_path, file_type)
       relative_path = File.join(@output_dir, "#{file_path}.#{file_type}")
       File.expand_path(relative_path)
+    end
+
+    def perform_file_operation(activity_descriptor, full_path, logger)
+      process_id = Process.pid
+      process_command_line = `ps -p #{process_id} -o command=`
+
+      yield if block_given?
+
+      activity_details = {
+        'full_path_to_file' => full_path,
+        'activity_descriptor' => activity_descriptor,
+        'process_name' => @script_name,
+        'process_command_line' => process_command_line.strip,
+        'process_id' => process_id,
+      }
+
+      logger.log_activity("file_#{activity_descriptor}", activity_details)
     end
 end
