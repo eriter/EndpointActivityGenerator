@@ -7,6 +7,7 @@ class FileActivityGenerator
       @script_name = script_name
     end
 
+    # Create an arbitrary file at configured location
     def create_file(file_path, file_type, logger)
       full_path = build_full_filepath(file_path, file_type)
 
@@ -15,7 +16,8 @@ class FileActivityGenerator
       end
     end
 
-    def modify_file(file_path, file_type, text_to_append = 'reminiscent bells', logger)
+    # Append text to file (be aware: will create a file if it's not already present)
+    def modify_file(file_path, file_type, text_to_append = 'words words words', logger)
       full_path = build_full_filepath(file_path, file_type)
 
       perform_file_operation('modify', full_path, logger) do
@@ -23,6 +25,8 @@ class FileActivityGenerator
       end
     end
 
+
+    # Delete the arbitrary file
     def delete_file(file_path, file_type, logger)
       full_path = build_full_filepath(file_path, file_type)
 
@@ -40,6 +44,7 @@ class FileActivityGenerator
 
     def perform_file_operation(activity_descriptor, full_path, logger)
       begin
+        # Execute operation specific block
         yield if block_given?
       rescue Errno::EACCES, Errno::EPERM => e
         error_message = "Permission error during file #{activity_descriptor} operation: #{e.message}"

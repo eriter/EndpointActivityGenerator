@@ -2,6 +2,8 @@ require 'socket'
 
 class NetworkActivityGenerator
 
+  # Establish a TCP connection with the specified host on the specified  port and
+  # transmit data, then log and make sure we've closed the connection
   def generate_network_activity(destination_address, destination_port, data, logger)
     begin
       establish_connection(destination_address, destination_port)
@@ -21,6 +23,7 @@ class NetworkActivityGenerator
   end
 
   def log_network_activity(destination_address, destination_port, data, protocol, logger)
+    # Check our own IP address and port
     source_address = Socket.ip_address_list.detect(&:ipv4_private?).ip_address
     local_address = @socket.local_address
     source_port = local_address.ip_port

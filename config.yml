@@ -1,12 +1,12 @@
 ---
 output_directory: generated_activity
-#process activity
+# Process activity params
 process_to_start: /bin/ls
 process_args: ['-l']
-#file activity
+# File activity params
 test_file_path: test_file
 test_file_type: txt
-#network activity
+# Network activity params
 destination_address: 8.8.8.8
 destination_port: "53"
 network_data: Test message
