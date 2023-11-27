@@ -1,11 +1,16 @@
 class ProcessActivityGenerator
 
+  # execute arbitrary process: it should be present on target systems
   def start_process(executable_path, arguments = [], logger)
     begin
       process_id = spawn_process(executable_path, arguments)
       log_process_start(executable_path, arguments, process_id, logger)
+      Process.detach(process_id)
     rescue => e
       logger.log_error("Error starting process: #{e.message}")
+    ensure
+      # make sure we don't leave any dangling child processes
+      Process.kill('HUP', process_id)
     end
   end
 
